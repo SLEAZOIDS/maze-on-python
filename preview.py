@@ -1,8 +1,10 @@
 import numpy
 import cv2
 
-class Preview:
+# 描画の待ち時間ms
+wait = 10
 
+class Preview:
     def __init__(self, maze, height, width):
         self.height, self.width = (height, width)
         self.maze_h, self.maze_w = maze.shape
@@ -17,7 +19,7 @@ class Preview:
         center = (int((_x + 0.5) * self.xstride), int((_y + 0.5) * self.ystride))
         cv2.circle(self.map_now, center, 11, (255, 255, 255), -1, cv2.LINE_AA)
         cv2.imshow('', self.map_now)
-        return cv2.waitKey(10)
+        return cv2.waitKey(wait)
 
     def __create_image(self, maze):
         image = numpy.zeros((self.height, self.width, 3)).astype('uint8')
