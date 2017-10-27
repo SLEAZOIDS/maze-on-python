@@ -3,6 +3,8 @@ import random
 import numpy
 from preview import *
 
+c = 4
+
 class Walker:
     
     def __init__(self, maze_map):
@@ -24,15 +26,18 @@ class Walker:
         self.__get_initial_actions()
 
     def walk(self):
+        self.__wark_to_next_coordinate()
+
+        y, x = self.journey[-1]
+
+        # HP減りすぎ
         if self.point <= 32:
             print('****crisis****')
             self.journey.append('error')
             return
 
-        y, x = self.journey[-1]
-
         #goal判定
-        if x == 8 and y == 8:
+        if y == 8 and x == 8:
             if self.point >= 50: 
                 print()
                 print('****SUCCESS!!!****')
@@ -46,14 +51,43 @@ class Walker:
                 self.journey.append('error')
                 return
 
+
         if len(self.actions[y, x]) == 0: 
             print('****cant walk restart****')
             self.journey.append('error')
             return
 
-        action = self.actions[y, x]
+        # 今いるところに戻れないように
+        self.__remove_action_to_here(y, x)
 
-        # 現在地に至るルートを消す
+
+    def __wark_to_next_coordinate(self):
+        y, x = self.journey[-1]
+
+        # 評価値がプラスの場所をc回まで検索（ランダム要素付与）
+        i = 0
+        action = self.actions[y, x]
+        while i <= c:
+            random.shuffle(action)
+            move = self.moves.get(action[0])
+            next_coordinate = list(self.journey[-1] + move)
+            reward = self.maze_map[next_coordinate[0]][next_coordinate[1]]
+            if reward >= 0:
+                break
+            i += 1
+
+        self.journey.append(next_coordinate)
+        print(next_coordinate, end=' point: ')
+        print(self.point)
+        self.point += reward
+        self.preview.show(next_coordinate)
+
+    def __get_initial_actions(self):
+        self.actions = numpy.array(copy.deepcopy(self.initial_actions))
+
+    # 現在地に至るルートを消す
+    def __remove_action_to_here(self, y, x):
+        # 左があれば、左からhereに至るアクションを削除
         if 0 in self.actions[y,x]:
             self.actions[y,x-1].remove(2)
         if 1 in self.actions[y,x]:
@@ -62,25 +96,6 @@ class Walker:
             self.actions[y,x+1].remove(0)
         if 3 in self.actions[y,x]:
             self.actions[y-1,x].remove(1)
-        
-        # 評価値の高い場所が見つかるまで進まない
-        i = 0
-        while i <= 4:
-            random.shuffle(action)
-            move = self.moves.get(action[0])
-            next_coordinate = list(self.journey[-1] + move)
-            r = self.maze_map[next_coordinate[0]][next_coordinate[1]]
-            if r >= 0:
-                break
-            i += 1
-        
-        if next_coordinate not in self.journey:
-            self.journey.append(next_coordinate)
-            dy, dx = self.journey[-1]
-            print(next_coordinate, end=' point: ')
-            print(self.point)
-            self.point += r
-            self.preview.show(next_coordinate)
 
     def __create_actions(self, maze_shape):
         self.initial_actions = []
@@ -98,9 +113,6 @@ class Walker:
         self.__create_wall(4, 7)
         self.__create_wall(6, 1)
 
-    def __get_initial_actions(self):
-        self.actions = numpy.array(copy.deepcopy(self.initial_actions))
-        
     def __create_wall(self, y, x):
         self.initial_actions[y][x+1].remove(0)
         self.initial_actions[y-1][x].remove(1)
