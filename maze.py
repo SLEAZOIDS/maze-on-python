@@ -22,5 +22,10 @@ if __name__ == '__main__':
 
     while True:
         walker.walk()
+        # if walker.root in walker.stack_root:
+        #     walker.turn_back()
+
         if walker.journey[-1] == 'error':
-            walker.restart()
+            walker.stack_dead_root()
+            walker.turn_back()
+            # walker.restart()
