@@ -1,9 +1,11 @@
+import sys
 import copy
 import random
 import numpy
 from preview import *
 
 c = 4
+debug = False
 
 class Walker:
     
@@ -20,6 +22,7 @@ class Walker:
         self.restart()
 
     def restart(self):
+        if debug: print('*****restart****')
         self.journey = []
         self.point = 36
         self.journey.append((1, 1))
@@ -32,7 +35,7 @@ class Walker:
 
         # HP減りすぎ
         if self.point <= 32:
-            print('****crisis****')
+            # print('****crisis****')
             self.journey.append('error')
             return
 
@@ -45,15 +48,14 @@ class Walker:
                 print(self.point)
                 sys.exit()
             else:
-                if self.point >= 48:
-                    print()
+                if self.point >= 46:
                     print('****cant kill restart:' + str(self.point) + '****')
                 self.journey.append('error')
                 return
 
 
         if len(self.actions[y, x]) == 0: 
-            print('****cant walk restart****')
+            # print('****cant walk restart****')
             self.journey.append('error')
             return
 
@@ -77,10 +79,11 @@ class Walker:
             i += 1
 
         self.journey.append(next_coordinate)
-        print(next_coordinate, end=' point: ')
-        print(self.point)
         self.point += reward
-        self.preview.show(next_coordinate)
+        if debug: 
+            print(next_coordinate, end=' point: ')
+            print(self.point)
+            self.preview.show(next_coordinate)
 
     def __get_initial_actions(self):
         self.actions = numpy.array(copy.deepcopy(self.initial_actions))
@@ -108,6 +111,7 @@ class Walker:
                 self.__remove_around(action, maze_h, maze_w, j, i)
                 self.initial_actions[j].append(action)
 
+        self.__create_wall(1, 1)
         self.__create_wall(1, 3)
         self.__create_wall(3, 1)
         self.__create_wall(4, 7)

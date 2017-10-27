@@ -2,7 +2,7 @@ import numpy
 import cv2
 
 # 描画の待ち時間ms
-wait = 10
+wait = 200
 
 class Preview:
     def __init__(self, maze, height, width):
@@ -33,11 +33,11 @@ class Preview:
 
     def __set_color(self, score):
         if score == 1.0:
-            return [127, 0, 0]
+            return [0, 128, 0]
         elif score == -1.0:
-            return [0, 0, 127]
+            return [62, 18, 69]
         elif score == -100:
-            return [0, 100, 127]
+            return [100, 0, 0]
         elif score == 0:
             return [0, 0, 0]
         else:
