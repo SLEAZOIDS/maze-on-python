@@ -25,6 +25,7 @@ class Walker:
         self.__restart()
 
     def __restart(self):
+        print('restart')
         self.root = ''
         self.journey = []
         self.point = 36
@@ -69,6 +70,9 @@ class Walker:
                 print(self.journey)
                 print(self.point)
                 sys.exit()
+            elif self.point < 40:
+                self.__restart()
+                return
             else:
                 print('****cant kill point = ' + str(self.point) + ' ****')
                 self.journey.append('error')
