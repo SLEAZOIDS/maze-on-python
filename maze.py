@@ -1,7 +1,3 @@
-from collections import deque
-import heapq
-import itertools
-import numpy
 from walker import *
 
 if __name__ == '__main__':
