@@ -2,13 +2,15 @@ import sys
 import copy
 import random
 import numpy
+import configparser
 from preview import *
 
-c = 3
-# debug = True
-debug = False
-# is_preview = True
-is_preview = False
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+chance = config.getint('WALKER', 'chance')
+debug = config.getboolean('WALKER', 'debug')
+preview = config.getboolean('WALKER', 'preview')
 
 class Walker:
     
@@ -92,10 +94,10 @@ class Walker:
     def __wark_to_next_coordinate(self):
         y, x = self.journey[-1]
 
-        # 評価値がプラスの場所をc回まで検索（ランダム要素付与）
+        # 評価値がプラスの場所をchance回まで検索（ランダム要素付与）
         i = 0
         action = self.actions[y, x]
-        while i <= c:
+        while i <= chance:
             dead_root_cnt = 0
             while True:
                 random.shuffle(action)
@@ -125,7 +127,7 @@ class Walker:
         if debug: 
             print(next_coordinate, end=' point: ')
             print(self.point)
-        if is_preview:
+        if preview:
             self.preview.show(next_coordinate)
 
     # 現在地に至るルートを消す
@@ -167,7 +169,7 @@ class Walker:
         self.root = self.root[:-1]
         self.point -= self.get_point_list.pop()
 
-        if is_preview:
+        if preview:
             self.preview.show(self.journey[-1])
 
     def __create_actions(self, maze_shape):
