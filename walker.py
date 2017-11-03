@@ -16,18 +16,21 @@ class Walker:
         self.maze_map = maze_map
         # マップ上の進める方向をリストに 0:左  1:下  2:右  3:上
         self.__create_actions((10,10))
-        self.__get_initial_actions()
 
         # moveは移動による座標の増減 0:左  1:下  2:右  3:上
         self.moves = {0: numpy.array([0, -1]), 1: numpy.array([1, 0]), 2: numpy.array([0, 1]), 3: numpy.array([-1, 0])}
         self.preview = Preview(numpy.array(maze_map), 300, 300)
         
         self.dead_roots = []
+        self.__restart()
+
+    def __restart(self):
         self.root = ''
         self.journey = []
         self.point = 36
         self.get_point_list = []
         self.journey.append([1, 1])
+        self.actions = numpy.array(copy.deepcopy(self.initial_actions))
 
     def stack_dead_root(self):
         self.dead_roots.append(self.root) 
@@ -120,9 +123,6 @@ class Walker:
             print(self.point)
         if is_preview:
             self.preview.show(next_coordinate)
-
-    def __get_initial_actions(self):
-        self.actions = numpy.array(copy.deepcopy(self.initial_actions))
 
     # 現在地に至るルートを消す
     def __remove_action_to_here(self, y, x):
